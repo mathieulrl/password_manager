@@ -1,38 +1,29 @@
 from flask import Flask, request, jsonify
-from tink import aead
-from tink import new_keyset_handle
+from flask_cors import CORS
+from cryptography.fernet import Fernet
 
 app = Flask(__name__)
-
-# Initialize Tink
-aead.register()
-
-# Generate the keyset
-key_template = aead.aead_key_templates.AES256_GCM
-keyset_handle = new_keyset_handle(key_template)
-
-
+CORS(app)
 
 @app.route('/encrypt', methods=['POST'])
 def encrypt():
+    # Retrieve the hash from the request
     hash_value = request.json.get('hashed_password')
-    print(hash_value)
+
+    # Check if the hash is provided
     if hash_value:
-        try:
-            # Get the AEAD primitive
-            aead_primitive = keyset_handle.primitive(aead.Aead)
-            print(aead_primitive)
-            # Encryption
-            encrypted_hash = aead_primitive.encrypt(hash_value.encode(), b'')
+        # Generate encryption key
+        key = Fernet.generate_key()
+        f = Fernet(key)
 
-            return jsonify({'encrypted_hash': encrypted_hash})
+        # Encrypt the hash
+        encrypted_hash = f.encrypt(hash_value.encode())
 
-        except Exception as e:
-            print(str(e))
-            return jsonify({'error': str(e)}), 500
+        # Return the encrypted hash as JSON response
+        return jsonify({'encrypted_hash': encrypted_hash.decode()})
 
+    # Return an error message if no hash is provided
     return jsonify({'error': 'No hash provided'}), 400
-
 
 if __name__ == '__main__':
     app.run(port=3000)

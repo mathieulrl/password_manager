@@ -4,40 +4,35 @@ import {Link, BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 
 
 function Login() {
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
 
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
-  };
+    setUsername(event.target.value)
+  }
 
   const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+    setPassword(event.target.value)
+  }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Send login credentials to the authentication API
-    const response = await fetch('http://127.0.0.1:5000/login', {
+  
+    // Envoyer le mot de passe pour vérification
+    const response = await fetch('http://127.0.0.1:5000/verify_password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
     });
-
-    // Check if the request was successful
+  
+    // Vérifier si la requête a réussi
     if (response.ok) {
       const result = await response.json();
       console.log('Response from server:', result.message);
-
-      // Redirect to your existing App component (page1)
-      // You can use the useHistory hook for this, or navigate programmatically in another way
-      // For simplicity, assume the user is redirected when the login is successful
     } else {
-      console.error('Login failed');
-      // You can handle login failure, such as displaying an error message to the user
+      console.error('Failed to hash password');
     }
   };
 

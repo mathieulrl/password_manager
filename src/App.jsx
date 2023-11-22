@@ -19,8 +19,8 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    // Envoyer le mot de passe à l'API pour l'encryption
-    const response = await fetch('http://127.0.0.1:5000/encrypt', {
+    // Envoyer le mot de passe à l'API pour le hashage
+    const response = await fetch('http://127.0.0.1:5000/hash', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -33,7 +33,7 @@ function App() {
       const result = await response.json();
       console.log('Response from server:', result.message);
     } else {
-      console.error('Failed to encrypt password');
+      console.error('Failed to hash password');
     }
   };
 
